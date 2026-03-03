@@ -538,6 +538,12 @@ function animateContact() {
   );
 }
 
+// ─── SUPABASE CONFIGURATION ────────────────────────────────────────────────
+const SUPABASE_URL = "https://rjyutkewkohrttxklwil.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqeXV0a2V3a29ocnR0eGtsd2lsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NDcyODYsImV4cCI6MjA4ODEyMzI4Nn0.cYeKYo2n1JqNw6h9cV6oVt5hHE1QSY1qd3xjHEJBqYI";
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // ─── CONTACT FORM SUBMIT ──────────────────────────────────────────────────
 (function contactForm() {
   const btn     = document.getElementById('formSubmit');
@@ -547,20 +553,44 @@ function animateContact() {
 
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     const name  = document.getElementById('senderName').value;
     const email = document.getElementById('senderEmail').value;
     const msg   = document.getElementById('senderMsg').value;
 
+    // Existing UI validation (kept intact)
     if (!name || !email || !msg) {
       // Shake the form
       gsap.to(form, { x: -8, duration: 0.07, yoyo: true, repeat: 5, ease: 'none' });
       return;
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      gsap.to(form, { x: -8, duration: 0.07, yoyo: true, repeat: 5, ease: 'none' });
+      return;
+    }
+
     loader.classList.add('active');
 
-    setTimeout(() => {
+    try {
+      // Real Supabase insertion
+      const { data, error } = await supabaseClient
+        .from('messages')
+        .insert([
+          {
+            name: name,
+            email: email,
+            message: msg
+          }
+        ]);
+
+      if (error) {
+        throw error;
+      }
+
+      // Success: Show success message
       loader.classList.remove('active');
       gsap.to(form, { opacity: 0, y: -10, duration: 0.3, onComplete: () => {
         form.style.display = 'none';
@@ -570,7 +600,23 @@ function animateContact() {
           { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }
         );
       }});
-    }, 2000);
+
+      // Optional: Clear form fields
+      document.getElementById('senderName').value = '';
+      document.getElementById('senderEmail').value = '';
+      document.getElementById('senderMsg').value = '';
+
+    } catch (error) {
+      // Error handling
+      loader.classList.remove('active');
+      console.error('Supabase error:', error);
+      
+      // Show error feedback (shake + optional error message)
+      gsap.to(form, { x: -8, duration: 0.07, yoyo: true, repeat: 5, ease: 'none' });
+      
+      // Optional: You could add an error message display here
+      // For now, just shake the form to indicate error
+    }
   });
 })();
 
