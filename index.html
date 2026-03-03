@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KESHAV GOKUL — ORBITAL INTERFACE</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-trail" id="cursorTrail"></div>
+
+  <!-- SCANLINE OVERLAY -->
+  <div class="scanlines"></div>
+
+  <!-- NOISE OVERLAY -->
+  <div class="noise"></div>
+
+  <!-- SECTION 1: HERO / SYSTEM INITIALIZATION -->
+  <section id="hero" class="section hero-section">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-skyline"></div>
+    <div class="hero-fog"></div>
+    <div class="hero-grid"></div>
+
+    <div class="hero-content">
+      <div class="system-id">
+        <span class="sys-label">SYS_ID</span>
+        <span class="sys-value">KGK-7734-ALPHA</span>
+      </div>
+
+      <div class="boot-sequence">
+        <p class="boot-line" id="boot1">
+          <span class="boot-prefix">&gt;&gt;</span> System Online.
+        </p>
+        <p class="boot-line" id="boot2">
+          <span class="boot-prefix">&gt;&gt;</span> Access Level: <span class="highlight">Authorized.</span>
+        </p>
+        <p class="boot-line" id="boot3">
+          <span class="boot-prefix">&gt;&gt;</span> Welcome to <span class="name-glow">KESHAV GOKUL. K</span>
+        </p>
+      </div>
+
+      <div class="sub-info">
+        <span>BE · CSE (IOT) · Sairam Engineering College</span>
+      </div>
+
+      <div class="clearance-container">
+        <div class="clearance-label">
+          <span>CLEARANCE LEVEL</span>
+          <span class="clearance-pct" id="clearancePct">0%</span>
+        </div>
+        <div class="clearance-bar">
+          <div class="clearance-fill" id="clearanceFill"></div>
+          <div class="clearance-glow" id="clearanceGlow"></div>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        <span class="scroll-text">INITIATE ASCENSION</span>
+        <div class="scroll-arrow">
+          <div class="arrow-line"></div>
+          <div class="arrow-head"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: ROCKET ASCENSION (PINNED) -->
+  <section id="ascension" class="section ascension-section">
+    <div class="ascension-inner" id="ascensionInner">
+      <canvas id="starCanvas"></canvas>
+
+      <!-- ATMOSPHERE LAYERS -->
+      <div class="atmo-layer atmo-city" id="atmoCity"></div>
+      <div class="atmo-layer atmo-low" id="atmoLow"></div>
+      <div class="atmo-layer atmo-mid" id="atmoMid"></div>
+      <div class="atmo-layer atmo-high" id="atmoHigh"></div>
+      <div class="atmo-layer atmo-space" id="atmoSpace"></div>
+
+      <!-- ROCKET -->
+      <div class="rocket-wrap" id="rocketWrap">
+        <div class="rocket-body" id="rocket">
+          <div class="rocket-glow-halo"></div>
+          <svg class="rocket-svg" viewBox="0 0 60 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Body -->
+            <path d="M30 5 C20 5 12 25 12 50 L12 85 L30 95 L48 85 L48 50 C48 25 40 5 30 5Z" fill="#0a0a0f" stroke="#00e5ff" stroke-width="1"/>
+            <!-- Nose cone glow -->
+            <path d="M30 5 C20 5 12 25 12 50 L30 50 L48 50 C48 25 40 5 30 5Z" fill="#050510" stroke="#00e5ff" stroke-width="0.5" opacity="0.8"/>
+            <!-- Window -->
+            <circle cx="30" cy="45" r="6" fill="#000" stroke="#00e5ff" stroke-width="1"/>
+            <circle cx="30" cy="45" r="4" fill="#001122" stroke="#00ffff" stroke-width="0.5" opacity="0.8"/>
+            <!-- Wings -->
+            <path d="M12 75 L2 95 L12 90 Z" fill="#050510" stroke="#7b2fff" stroke-width="1"/>
+            <path d="M48 75 L58 95 L48 90 Z" fill="#050510" stroke="#7b2fff" stroke-width="1"/>
+            <!-- Engine nozzle -->
+            <rect x="20" y="85" width="20" height="10" rx="2" fill="#0a0a1a" stroke="#00e5ff" stroke-width="0.5"/>
+          </svg>
+          <!-- Thruster flame -->
+          <div class="thruster">
+            <div class="flame flame-core"></div>
+            <div class="flame flame-mid"></div>
+            <div class="flame flame-outer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALTITUDE READOUT -->
+      <div class="altitude-hud" id="altHud">
+        <div class="hud-row">
+          <span class="hud-label">ALT</span>
+          <span class="hud-val" id="altVal">000 km</span>
+        </div>
+        <div class="hud-row">
+          <span class="hud-label">VEL</span>
+          <span class="hud-val" id="velVal">0.0 km/s</span>
+        </div>
+        <div class="hud-row">
+          <span class="hud-label">PHASE</span>
+          <span class="hud-val" id="phaseVal">CITY</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: ORBITAL SPACE -->
+  <section id="orbital" class="section orbital-section">
+    <canvas id="spaceCanvas"></canvas>
+
+    <div class="orbital-ui">
+      <div class="orbital-header">
+        <p class="orbital-label">ORBITAL INTERFACE ACTIVE</p>
+        <p class="orbital-sub">SELECT A CORE SYSTEM TO INITIALIZE</p>
+      </div>
+
+      <div class="planet-system" id="planetSystem">
+
+        <!-- PLANET: SKILLS -->
+        <div class="planet-orbit" id="orbitSkills" style="--orbit-radius:220px; --orbit-speed:28s; --start-angle:45deg;">
+          <div class="planet-node" id="planetSkills" data-planet="skills">
+            <div class="planet-halo"></div>
+            <div class="planet-sphere">
+              <div class="planet-inner">
+                <span class="planet-icon">⬡</span>
+              </div>
+            </div>
+            <div class="planet-label">SKILLS</div>
+            <div class="planet-tooltip">Full Stack · ML · Problem Solving</div>
+          </div>
+        </div>
+
+        <!-- PLANET: PROJECTS -->
+        <div class="planet-orbit" id="orbitProjects" style="--orbit-radius:340px; --orbit-speed:42s; --start-angle:135deg;">
+          <div class="planet-node" id="planetProjects" data-planet="projects">
+            <div class="planet-halo"></div>
+            <div class="planet-sphere">
+              <div class="planet-inner">
+                <span class="planet-icon">◈</span>
+              </div>
+            </div>
+            <div class="planet-label">PROJECTS</div>
+            <div class="planet-tooltip">Engineering · Innovation · Code</div>
+          </div>
+        </div>
+
+        <!-- PLANET: EXPERIENCE -->
+        <div class="planet-orbit" id="orbitExp" style="--orbit-radius:460px; --orbit-speed:60s; --start-angle:220deg;">
+          <div class="planet-node" id="planetExp" data-planet="experience">
+            <div class="planet-halo"></div>
+            <div class="planet-sphere">
+              <div class="planet-inner">
+                <span class="planet-icon">◎</span>
+              </div>
+            </div>
+            <div class="planet-label">EXPERIENCE</div>
+            <div class="planet-tooltip">9 CGPA · Leadership · Growth</div>
+          </div>
+        </div>
+
+        <!-- PLANET: CONTACT -->
+        <div class="planet-orbit" id="orbitContact" style="--orbit-radius:580px; --orbit-speed:80s; --start-angle:300deg;">
+          <div class="planet-node" id="planetContact" data-planet="contact">
+            <div class="planet-halo"></div>
+            <div class="planet-sphere">
+              <div class="planet-inner">
+                <span class="planet-icon">⊕</span>
+              </div>
+            </div>
+            <div class="planet-label">CONTACT</div>
+            <div class="planet-tooltip">Open Channel · Transmit</div>
+          </div>
+        </div>
+
+        <!-- ORBITAL RINGS -->
+        <div class="orbital-ring" style="--ring-size:440px; --ring-opacity:0.15;"></div>
+        <div class="orbital-ring" style="--ring-size:680px; --ring-opacity:0.10;"></div>
+        <div class="orbital-ring" style="--ring-size:920px; --ring-opacity:0.07;"></div>
+        <div class="orbital-ring" style="--ring-size:1160px; --ring-opacity:0.05;"></div>
+
+        <!-- CENTER CORE -->
+        <div class="orbital-core">
+          <div class="core-pulse"></div>
+          <div class="core-inner">KG</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANET PANELS (OVERLAYS) -->
+  <div class="panel-overlay" id="panelOverlay">
+
+    <!-- SKILLS PANEL -->
+    <div class="planet-panel" id="panelSkills">
+      <div class="panel-header">
+        <div class="panel-tag">CORE_SYS :: SKILLS</div>
+        <button class="panel-close" data-close="skills">✕ CLOSE CHANNEL</button>
+      </div>
+      <div class="panel-body">
+        <div class="skill-grid">
+
+          <div class="skill-item" data-skill="Full Stack Dev" data-pct="85">
+            <div class="skill-ring-wrap">
+              <svg class="skill-ring" viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="32"/>
+                <circle class="ring-fill" cx="40" cy="40" r="32" style="--pct:85"/>
+              </svg>
+              <div class="skill-ring-label">85%</div>
+            </div>
+            <div class="skill-name">Full Stack Dev</div>
+          </div>
+
+          <div class="skill-item" data-skill="Machine Learning" data-pct="72">
+            <div class="skill-ring-wrap">
+              <svg class="skill-ring" viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="32"/>
+                <circle class="ring-fill" cx="40" cy="40" r="32" style="--pct:72"/>
+              </svg>
+              <div class="skill-ring-label">72%</div>
+            </div>
+            <div class="skill-name">Machine Learning</div>
+          </div>
+
+          <div class="skill-item" data-skill="Problem Solving" data-pct="90">
+            <div class="skill-ring-wrap">
+              <svg class="skill-ring" viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="32"/>
+                <circle class="ring-fill" cx="40" cy="40" r="32" style="--pct:90"/>
+              </svg>
+              <div class="skill-ring-label">90%</div>
+            </div>
+            <div class="skill-name">Problem Solving</div>
+          </div>
+
+          <div class="skill-item" data-skill="Public Speaking" data-pct="88">
+            <div class="skill-ring-wrap">
+              <svg class="skill-ring" viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="32"/>
+                <circle class="ring-fill" cx="40" cy="40" r="32" style="--pct:88"/>
+              </svg>
+              <div class="skill-ring-label">88%</div>
+            </div>
+            <div class="skill-name">Public Speaking</div>
+          </div>
+
+          <div class="skill-item" data-skill="IoT Systems" data-pct="78">
+            <div class="skill-ring-wrap">
+              <svg class="skill-ring" viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="32"/>
+                <circle class="ring-fill" cx="40" cy="40" r="32" style="--pct:78"/>
+              </svg>
+              <div class="skill-ring-label">78%</div>
+            </div>
+            <div class="skill-name">IoT Systems</div>
+          </div>
+
+          <div class="skill-item" data-skill="Quick Thinking" data-pct="93">
+            <div class="skill-ring-wrap">
+              <svg class="skill-ring" viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="32"/>
+                <circle class="ring-fill" cx="40" cy="40" r="32" style="--pct:93"/>
+              </svg>
+              <div class="skill-ring-label">93%</div>
+            </div>
+            <div class="skill-name">Quick Thinking</div>
+          </div>
+
+        </div>
+
+        <div class="tech-tags">
+          <span class="tech-tag">HTML · CSS · JS</span>
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">TensorFlow</span>
+          <span class="tech-tag">SQL</span>
+          <span class="tech-tag">MongoDB</span>
+          <span class="tech-tag">Git</span>
+          <span class="tech-tag">IoT Protocols</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS PANEL -->
+    <div class="planet-panel" id="panelProjects">
+      <div class="panel-header">
+        <div class="panel-tag">CORE_SYS :: PROJECTS</div>
+        <button class="panel-close" data-close="projects">✕ CLOSE CHANNEL</button>
+      </div>
+      <div class="panel-body">
+        <div class="project-grid">
+
+          <div class="project-card">
+            <div class="project-card-top">
+              <span class="project-num">01</span>
+              <div class="project-status">ACTIVE</div>
+            </div>
+            <h3 class="project-title">SmartHome IoT Hub</h3>
+            <p class="project-desc">Full-stack IoT dashboard connecting multiple smart devices. Real-time data visualization with ML-powered anomaly detection and predictive automation.</p>
+            <div class="project-tags">
+              <span>Node.js</span><span>MQTT</span><span>React</span><span>ML</span>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-card-top">
+              <span class="project-num">02</span>
+              <div class="project-status">DEPLOYED</div>
+            </div>
+            <h3 class="project-title">Neural Vision Classifier</h3>
+            <p class="project-desc">Deep learning image classification system trained on custom datasets. Achieves 94% accuracy with real-time inference pipeline and REST API layer.</p>
+            <div class="project-tags">
+              <span>Python</span><span>TensorFlow</span><span>Flask</span><span>OpenCV</span>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-card-top">
+              <span class="project-num">03</span>
+              <div class="project-status">ACTIVE</div>
+            </div>
+            <h3 class="project-title">Orbital Dev Portfolio</h3>
+            <p class="project-desc">This very interface. A cinematic scroll-driven portfolio experience built with pure vanilla HTML, CSS, and GSAP. Zero frameworks.</p>
+            <div class="project-tags">
+              <span>HTML</span><span>CSS</span><span>JS</span><span>GSAP</span>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="project-card-top">
+              <span class="project-num">04</span>
+              <div class="project-status">RESEARCH</div>
+            </div>
+            <h3 class="project-title">Predictive Analytics Engine</h3>
+            <p class="project-desc">ML pipeline for predictive data analytics in campus environments. Processing student performance data to surface early intervention signals.</p>
+            <div class="project-tags">
+              <span>Python</span><span>Scikit-learn</span><span>Pandas</span><span>D3.js</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE PANEL -->
+    <div class="planet-panel" id="panelExperience">
+      <div class="panel-header">
+        <div class="panel-tag">CORE_SYS :: EXPERIENCE</div>
+        <button class="panel-close" data-close="experience">✕ CLOSE CHANNEL</button>
+      </div>
+      <div class="panel-body">
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-connector"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">2024 — PRESENT</div>
+              <h3 class="timeline-title">BE in CSE (IoT)</h3>
+              <p class="timeline-org">Sairam Engineering College · First Year</p>
+              <p class="timeline-desc">Pursuing Bachelor of Engineering with specialization in Internet of Things. Maintaining a 9.0 CGPA while actively engaging in technical projects and extracurriculars.</p>
+              <div class="timeline-badge">9.0 CGPA</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-connector"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">2024</div>
+              <h3 class="timeline-title">Full Stack Developer</h3>
+              <p class="timeline-org">Independent Projects · Self-Directed</p>
+              <p class="timeline-desc">Built and deployed multiple full-stack applications. Developed proficiency in both frontend and backend technologies, integrating APIs and databases.</p>
+              <div class="timeline-badge">DEVELOPER</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-connector"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">2023 — 2024</div>
+              <h3 class="timeline-title">Public Speaker</h3>
+              <p class="timeline-org">Competitions · Seminars · Events</p>
+              <p class="timeline-desc">Participated in multiple public speaking events and technical presentations. Developed strong communication skills and the ability to convey complex technical concepts clearly.</p>
+              <div class="timeline-badge">SPEAKER</div>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">2023</div>
+              <h3 class="timeline-title">ML Research Enthusiast</h3>
+              <p class="timeline-org">Self-Directed Learning · Online Platforms</p>
+              <p class="timeline-desc">Deep dive into machine learning fundamentals, neural networks, and applied AI. Built foundational models and contributed to early research initiatives.</p>
+              <div class="timeline-badge">ML RESEARCH</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT PANEL -->
+    <div class="planet-panel" id="panelContact">
+      <div class="panel-header">
+        <div class="panel-tag">CORE_SYS :: CONTACT</div>
+        <button class="panel-close" data-close="contact">✕ CLOSE CHANNEL</button>
+      </div>
+      <div class="panel-body">
+        <div class="contact-terminal">
+          <div class="terminal-header">
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+            <span class="terminal-title">TRANSMISSION_CONSOLE v4.1</span>
+          </div>
+          <div class="terminal-body">
+            <div class="terminal-prompt">
+              <span class="prompt-sym">&gt;</span>
+              <span class="prompt-text">Establishing secure channel to <span class="prompt-name">KESHAV GOKUL</span>...</span>
+            </div>
+
+            <div class="contact-form" id="contactForm">
+              <div class="form-field">
+                <label class="form-label">SENDER_ID</label>
+                <input type="text" class="form-input" id="senderName" placeholder="Your name" autocomplete="off"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">CHANNEL_ADDR</label>
+                <input type="email" class="form-input" id="senderEmail" placeholder="your@email.com" autocomplete="off"/>
+              </div>
+              <div class="form-field">
+                <label class="form-label">TRANSMISSION</label>
+                <textarea class="form-input form-textarea" id="senderMsg" placeholder="Enter your message..."></textarea>
+              </div>
+              <button class="form-submit" id="formSubmit">
+                <span class="submit-text">TRANSMIT MESSAGE</span>
+                <div class="submit-loader" id="submitLoader">
+                  <div class="loader-bar"></div>
+                </div>
+              </button>
+            </div>
+
+            <div class="transmission-success" id="txSuccess">
+              <div class="success-icon">✓</div>
+              <p class="success-title">TRANSMISSION SENT</p>
+              <p class="success-sub">Signal received. Response incoming.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-overlay -->
+
+  <!-- FINAL SECTION -->
+  <section id="final" class="section final-section">
+    <canvas id="finalCanvas"></canvas>
+    <div class="final-content">
+      <p class="final-sys">SYS_STATUS :: ALL NODES INITIALIZED</p>
+      <h2 class="final-title">Ready to Build<br/>the Future.</h2>
+      <p class="final-sub">First Year · CSE IOT · Sairam Engineering College</p>
+      <div class="final-links">
+        <a href="#" class="final-link">GitHub</a>
+        <a href="#" class="final-link">LinkedIn</a>
+        <a href="#" class="final-link" onclick="document.querySelector('[data-planet=contact]').click(); return false;">Open Channel</a>
+      </div>
+      <p class="final-sig">KGK-7734-ALPHA · KESHAV GOKUL. K</p>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
