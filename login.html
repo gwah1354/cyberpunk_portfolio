@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Cyberpunk Portfolio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #00f5ff;
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00f5ff;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #00f5ff 0%, #0088cc 100%);
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 245, 255, 0.3);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            color: #fca5a5;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            color: #86efac;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #00f5ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1 class="login-title">Admin Login</h1>
+            <p class="login-subtitle">Access the admin dashboard</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-input" 
+                    placeholder="admin@example.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input" 
+                    placeholder="Enter your password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton">
+                Sign In
+            </button>
+        </form>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Portfolio</a>
+        </div>
+    </div>
+
+    <script src="supabaseClient.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
