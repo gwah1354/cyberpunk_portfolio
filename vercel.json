@@ -6,11 +6,11 @@
     },
     {
       "source": "/login",
-      "destination": "/auth/login.html"
+      "destination": "/public/auth/login.html"
     },
     {
       "source": "/admin",
-      "destination": "/admin/admin.html"
+      "destination": "/public/admin/admin.html"
     },
     {
       "source": "/(.*)",
