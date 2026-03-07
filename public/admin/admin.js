@@ -144,6 +144,11 @@ function setupRealtimeSubscription() {
             }
         )
         .subscribe();
+
+    // Add cleanup listener for page unload
+    window.addEventListener("beforeunload", () => {
+        supabaseClient.removeChannel(messagesChannel);
+    });
 }
 
 // Initialize realtime subscription after loading messages
