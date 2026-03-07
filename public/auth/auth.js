@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Redirect to admin dashboard
             setTimeout(() => {
-                window.location.href = 'admin.html';
+                window.location.href = '../admin/admin.html';
             }, 1000);
 
         } catch (error) {
@@ -68,7 +68,7 @@ async function checkExistingSession() {
         
         if (session && !error) {
             // User is already logged in, redirect to admin
-            window.location.href = 'admin.html';
+            window.location.href = '../admin/admin.html';
         }
     } catch (error) {
         console.error('Session check error:', error);

@@ -19,7 +19,7 @@ async function checkAuthentication() {
         
         if (error || !session) {
             // Not authenticated, redirect to login
-            window.location.href = 'login.html';
+            window.location.href = '../auth/login.html';
             return;
         }
         
@@ -28,7 +28,7 @@ async function checkAuthentication() {
         
     } catch (error) {
         console.error('Authentication check error:', error);
-        window.location.href = 'login.html';
+        window.location.href = '../auth/login.html';
     }
 }
 
@@ -220,7 +220,7 @@ async function handleLogout() {
         }
         
         // Redirect to login page
-        window.location.href = 'login.html';
+        window.location.href = '../auth/login.html';
         
     } catch (error) {
         console.error('Logout error:', error);
