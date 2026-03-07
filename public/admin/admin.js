@@ -75,6 +75,80 @@ async function loadMessages() {
     }
 }
 
+// Setup realtime subscription for new messages
+function setupRealtimeSubscription() {
+    const messagesChannel = supabaseClient
+        .channel('messages-realtime')
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages'
+            },
+            (payload) => {
+                const newMessage = payload.new;
+                
+                // Update message count
+                const messageCount = document.getElementById('messageCount');
+                const currentCount = parseInt(messageCount.textContent);
+                messageCount.textContent = `${currentCount + 1} message${currentCount + 1 !== 1 ? 's' : ''}`;
+                
+                // Remove empty state if it exists
+                const emptyState = document.querySelector('.empty-state');
+                if (emptyState) {
+                    loadMessages(); // Reload to show proper list
+                    return;
+                }
+                
+                // Add new message to top of list
+                const messagesList = document.getElementById('messagesList');
+                const newMessageElement = document.createElement('div');
+                newMessageElement.innerHTML = `
+                    <div class="message-item" id="message-${newMessage.id}">
+                        <div class="message-header">
+                            <div class="message-info">
+                                <div class="message-name">${escapeHtml(newMessage.name)}</div>
+                                <div class="message-email">${escapeHtml(newMessage.email)}</div>
+                                <div class="message-timestamp">${formatTimestamp(newMessage.created_at)}</div>
+                            </div>
+                            <div class="message-actions">
+                                <button class="action-button edit-button" onclick="editMessage(${newMessage.id})">
+                                    Edit
+                                </button>
+                                <button class="action-button delete-button" onclick="deleteMessage(${newMessage.id})">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div class="message-content" id="content-${newMessage.id}">
+                            ${escapeHtml(newMessage.message)}
+                        </div>
+                    </div>
+                `;
+                
+                // Add to top of list with animation
+                const firstChild = messagesList.firstChild;
+                if (firstChild) {
+                    messagesList.insertBefore(newMessageElement.firstElementChild, firstChild);
+                } else {
+                    messagesList.appendChild(newMessageElement.firstElementChild);
+                }
+                
+                // Flash animation for new message
+                const newElement = document.getElementById(`message-${newMessage.id}`);
+                newElement.style.background = 'rgba(34, 197, 94, 0.1)';
+                setTimeout(() => {
+                    newElement.style.background = '';
+                }, 2000);
+            }
+        )
+        .subscribe();
+}
+
+// Initialize realtime subscription after loading messages
+setupRealtimeSubscription();
+
 // Render messages in the UI
 function renderMessages(messages) {
     const messagesList = document.getElementById('messagesList');
