@@ -138,11 +138,19 @@ function setupRealtimeSubscription() {
                     messagesList.appendChild(newMessageElement.firstElementChild);
                 }
                 
+                // Play notification sound
+                const notificationSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_8c2d0d3d7e.mp3");
+                notificationSound.volume = 0.8;
+                notificationSound.play();
+                
                 // Flash animation for new message
                 const newElement = document.getElementById(`message-${newMessage.id}`);
+                newElement.classList.add("new-message-pulse");
                 newElement.style.background = 'rgba(34, 197, 94, 0.1)';
+                
                 setTimeout(() => {
                     newElement.style.background = '';
+                    newElement.classList.remove("new-message-pulse");
                 }, 2000);
             }
         )
