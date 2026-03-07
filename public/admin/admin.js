@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load messages
     loadMessages();
     
+    // Setup realtime subscription
+    setupRealtimeSubscription();
+    
     // Setup logout
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
 });
@@ -150,9 +153,6 @@ function setupRealtimeSubscription() {
         supabaseClient.removeChannel(messagesChannel);
     });
 }
-
-// Initialize realtime subscription after loading messages
-setupRealtimeSubscription();
 
 // Render messages in the UI
 function renderMessages(messages) {
